@@ -1051,6 +1051,8 @@ type RedisConfig struct {
 	MinIdleConns int `mapstructure:"min_idle_conns"`
 	// EnableTLS: 是否启用 TLS/SSL 连接
 	EnableTLS bool `mapstructure:"enable_tls"`
+	// TLSSkipVerify: 跳过 Redis TLS 证书校验，仅建议临时调试或私有网络兜底使用
+	TLSSkipVerify bool `mapstructure:"tls_skip_verify"`
 }
 
 func (r *RedisConfig) Address() string {
@@ -1559,6 +1561,7 @@ func setDefaults() {
 	viper.SetDefault("redis.pool_size", 1024)
 	viper.SetDefault("redis.min_idle_conns", 128)
 	viper.SetDefault("redis.enable_tls", false)
+	viper.SetDefault("redis.tls_skip_verify", true)
 
 	// Ops (vNext)
 	viper.SetDefault("ops.enabled", true)
