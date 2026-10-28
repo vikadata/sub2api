@@ -394,6 +394,35 @@ func TestValidateProviderNotificationMetadataRejectsAirwallexSnapshotMismatch(t 
 	assert.ErrorContains(t, err, "airwallex currency mismatch")
 }
 
+func TestValidateProviderNotificationMetadataRejectsCreemMismatch(t *testing.T) {
+	t.Parallel()
+
+	order := &dbent.PaymentOrder{
+		PaymentType: payment.TypeCreem,
+		ProviderSnapshot: map[string]any{
+			"schema_version": 2,
+			"currency":       "USD",
+		},
+	}
+
+	assert.NoError(t, validateProviderNotificationMetadata(order, payment.TypeCreem, map[string]string{
+		"currency": "USD",
+		"status":   "paid",
+	}))
+
+	err := validateProviderNotificationMetadata(order, payment.TypeCreem, map[string]string{
+		"currency": "EUR",
+		"status":   "paid",
+	})
+	assert.ErrorContains(t, err, "creem currency mismatch")
+
+	err = validateProviderNotificationMetadata(order, payment.TypeCreem, map[string]string{
+		"currency": "USD",
+		"status":   "pending",
+	})
+	assert.ErrorContains(t, err, "creem order status mismatch")
+}
+
 func TestValidateProviderNotificationMetadataRejectsStripeCurrencyMismatch(t *testing.T) {
 	t.Parallel()
 
